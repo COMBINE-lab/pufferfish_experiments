@@ -1,0 +1,8 @@
+{
+    "debga" : "~/deBGA/deBGA",
+    "pufferfish" : "~/nemo/build/src/pufferfish",
+    "kallisto" : "~/kallisto_kmer_lookup/build/src/kallisto",
+    "data_path" : "/mnt/scratch7/pufferfish_data",
+    "output_path" : "/mnt/scratch7/pufferfish_results",
+    "human_txome" : "gencode.v25.pc_transcripts_fixed.fa"
+}
