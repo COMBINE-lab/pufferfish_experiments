@@ -1,8 +1,12 @@
 {
-    "debga" : "~/deBGA/deBGA",
-    "pufferfish" : "~/nemo/build/src/pufferfish",
-    "kallisto" : "~/kallisto_kmer_lookup/build/src/kallisto",
+	"debga" : "~/debga/debga",
+	"bwa" : "/mnt/scratch7/pufferfish_progs/bwa",
+    "pufferfish" : "/mnt/scratch7/pufferfish_progs/pufferfish/build/src",
+    "kallisto" : "/mnt/scratch7/pufferfish_progs/kallisto_kmer_lookup/build/src/kallisto",
     "data_path" : "/mnt/scratch7/pufferfish_data",
     "output_path" : "/mnt/scratch7/pufferfish_results",
-    "human_txome" : "gencode.v25.pc_transcripts_fixed.fa"
+    "human_txome_ref" : "gencode.v25.pc_transcripts_fixed",
+	"human_genome_ref" : "GRCh38.primary_assembly.genome.fixed",
+    "human_txome_read" : "human_txome_reads",
+	"human_genome_read" : "GRCh38.primary_assembly.genome.fixed"
 }
