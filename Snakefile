@@ -9,12 +9,12 @@ data_path  = config["data_path"]
 output_path  = config["output_path"]
 
 human_txome_ref = config["human_txome_ref"]
-human_genome_ref = config["human_genome_ref"]
+#human_genome_ref = config["human_genome_ref"]
 #bacterial_genome_ref = config["bacterial_genome_ref"]
-datasets = [human_txome_ref, human_genome_ref]
+datasets = [human_txome_ref]#, human_genome_ref]
 
 human_txome_read = config["human_txome_read"]
-human_genome_read = config["human_genome_read"]
+#human_genome_read = config["human_genome_read"]
 #bacterial_genome_read = config["bacterial_genome_read"]
 
 
@@ -25,11 +25,11 @@ rule all:
       expand("{out}/k{k}_n_{outfiles}.kallisto_idx", out=output_path, k=ksize, outfiles=datasets),
       expand("{out}/k{k}_n_{outfiles}.puffer_idx", out=output_path, outfiles=datasets, k=ksize),
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.bwa.lookup.benchmark.txt", out=output_path, ref=human_txome_ref, read=human_txome_read, k=ksize),
-      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.bwa.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize),
+#expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.bwa.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize),
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.kallisto.lookup.benchmark.txt", out=output_path, ref=human_txome_ref, read=human_txome_read, k=ksize),
-      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.kallisto.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize),
+#     expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.kallisto.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize),
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.lookup.benchmark.txt", out=output_path, ref=human_txome_ref, read=human_txome_read, k=ksize),
-      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize)
+#     expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize)
 
 rule bwa_lookup:
      input :
@@ -97,9 +97,9 @@ rule kallisto_index:
      input :
            os.path.sep.join([data_path, "{ref}.fa"])
      output :
-           os.path.sep.join([output_path, "{ksize}_n_{ref}.kallisto_idx"])
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.kallisto_idx"])
      benchmark:
-          os.path.sep.join([output_path, "benchmarks/{ksize}_n_{ref}.kallisto.index.benchmark.txt"])
+          os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.kallisto.index.benchmark.txt"])
      message:
           kallisto + " index -k {ksize} -i {output} {input}"
      log:
@@ -148,7 +148,7 @@ rule puffer_index:
      log:
           os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}.puffer.index.log"])
      shell :
-          "touch {output}; {puffer} index -k {ksize} -o {output} -g {input} > {log} 2>&1"
+          "rm -rf {output}; {puffer} index -k {ksize} -o {output} -g {input} > {log} 2>&1"
 
 rule debga_index:
      input :
