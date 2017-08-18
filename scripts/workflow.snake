@@ -4,7 +4,7 @@ tpk_dir=config["twopaco"]
 puff_dir=config["puffer"]
 out_dir=config["out"]
 kmer=config["kmer"]
-threads=config["t"]
+cores=int(config["t"])
 fasta_file=config["fa"]
 prefix=fasta_file.split("/")[-1].split(".")[0]
 
@@ -12,12 +12,20 @@ prefix=fasta_file.split("/")[-1].split(".")[0]
 twopacko_binary=tpk_dir+"/graphconstructor/twopaco"
 graphdump_binary=tpk_dir+"/graphdump/graphdump"
 pufferize_binary=puff_dir+"/src/pufferize"
+tmp_dir=out_dir+"/tmp/"
 
 
 rule create_graph:
+    threads: cores
     run:
         if(not os.path.isdir(out_dir)):
             shell("mkdir -p {}",format(out_dir))
-        shell("{} -k {} -t {} -f 32 {} --outfile dee.bin".format(twopacko_binary,kmer,threads,fasta_file))
+        if(not os.path.isdir(tmp_dir)):
+            shell("mkdir -p {}",format(tmp_dir))
+
+        print("something")
+        print("{} -k {} -t {} -f 32 {} --tmpdir {} --outfile dee.bin".format(twopacko_binary,kmer,cores,fasta_file,tmp_dir))
+        shell("{} -k {} -t {} -f 32 {} --tmpdir {} --outfile dee.bin".format(twopacko_binary,kmer,cores,fasta_file,tmp_dir))
         shell("{} dee.bin -f gfa1 -k {} -s {} > {}/{}.graph.gfa".format(graphdump_binary,kmer,fasta_file,out_dir,prefix))
         shell("{} -k {} -g {}/{}.graph.gfa -f {} -o {}/{}.graph.pufferized.gfa".format(pufferize_binary,kmer,out_dir,prefix,out_dir,prefix))
+
