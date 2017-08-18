@@ -1,5 +1,5 @@
 {
-	"ksize" : "27",
+	"ksize" : "31",
 	"debga" : "~/debga/debga",
 	"bwa" : "/mnt/scratch7/pufferfish_progs/bwa/bwa",
     "pufferfish" : "/mnt/scratch7/pufferfish_progs/pufferfish/build/src/pufferfish",
@@ -7,7 +7,8 @@
     "twopaco" : "/mnt/scratch7/pufferfish_progs/TwoPaCo/build",
     "pufferize" : "/mnt/scratch7/pufferfish_progs/pufferfish/build/src/pufferize",
     "data_path" : "/mnt/scratch7/pufferfish_data",
-    "output_path" : "/mnt/scratch7/pufferfish_results",
+    "output_path1" : "/mnt/scratch7/pufferfish_results",
+    "output_path" : "/mnt/scratch7/test",
     "human_txome_ref" : "gencode.v25.pc_transcripts_fixed",
 	"human_genome_ref" : "GRCh38.primary_assembly.genome.fixed",
 	"bacterial_genome_ref" : "bacterial.genome.fixed",

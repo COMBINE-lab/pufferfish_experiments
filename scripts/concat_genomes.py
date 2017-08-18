@@ -15,14 +15,14 @@ args = parser.parse_args()
 
 out_handle=open(args.o,"w")
 
-i=1
+i=1 #global id
 for f in tqdm.tqdm(glob.glob(args.d+"/*.gz")):
     seq_idx=1
     seq_name=f.split("/")[-1].split(".")[0]
     with gzip.open(f, 'rb') as h:
         for line in h.readlines():
             if line[0]==">":
-                out_handle.write(">%s_%d\n"%(seq_name,seq_idx))
+                out_handle.write(">%s_%d_%d\n"%(seq_name,seq_idx,i))
                 seq_idx+=1
                 continue
             out_handle.write(line)
