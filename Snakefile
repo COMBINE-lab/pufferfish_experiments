@@ -30,7 +30,10 @@ rule all:
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.kallisto.lookup.benchmark.txt", out=output_path, ref=human_txome_ref, read=human_txome_read, k=ksize),
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.kallisto.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize),
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.lookup.benchmark.txt", out=output_path, ref=human_txome_ref, read=human_txome_read, k=ksize),
-      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize)
+      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize),
+      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.sparse.lookup.benchmark.txt", out=output_path, ref=human_txome_ref, read=human_txome_read, k=ksize),
+      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.sparse.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize)
+
 
 rule bwa_lookup:
      input :
@@ -78,6 +81,22 @@ rule puffer_lookup:
           os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}_vs_{reads}.puffer.lookup.log"])
      shell :
           puffer + " lookup -i {input.index} -r {input.reads} > {log} 2>&1"
+
+rule puffer_sparse_lookup:
+     input :
+           index = os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_sparse_idx"]),
+           reads = os.path.sep.join([data_path, "{reads}.fa"])
+     output:
+          os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}_vs_{reads}.puffer.sparse.lookup.benchmark.txt"])
+     benchmark:
+          os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}_vs_{reads}.puffer.sparse.lookup.benchmark.txt"])
+     message:
+          puffer + " lookup -i {input.index} -r {input.reads}"
+     log:
+          os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}_vs_{reads}.puffer.sparse.lookup.log"])
+     shell :
+          puffer + " lookup -i {input.index} -r {input.reads} > {log} 2>&1"
+
 
 rule bwa_index:
      input :
@@ -157,11 +176,11 @@ rule puffer_index_sparse:
      output :
            os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_sparse_idx"])
      benchmark:
-          os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.puffer.index.benchmark.txt"])
+          os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.puffer.index.sparse.benchmark.txt"])
      message:
           puffer + " index -k {ksize} -o {output} -g {input}"
      log:
-          os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}.puffer.index.log"])
+          os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}.puffer.index.sparse.log"])
      shell :
           "rm -rf {output}; {puffer} index -s -k {ksize} -o {output} -g {input} > {log} 2>&1"
 
