@@ -8,6 +8,8 @@ puffer = config["pufferfish"]
 data_path  = config["data_path"]
 output_path  = config["output_path"]
 
+de_bruijn = os.path.sep.join([data_path, "de_bruijn.bin"])
+
 human_txome_ref = config["human_txome_ref"]
 human_genome_ref = config["human_genome_ref"]
 #bacterial_genome_ref = config["bacterial_genome_ref"]
@@ -23,8 +25,8 @@ rule all:
      input:
       expand("{out}/k{k}_n_{outfiles}.bwa_idx", out=output_path, k=ksize, outfiles=datasets),
       expand("{out}/k{k}_n_{outfiles}.kallisto_idx", out=output_path, k=ksize, outfiles=datasets),
-      expand("{out}/k{k}_n_{outfiles}.puffer_idx", out=output_path, outfiles=datasets, k=ksize),
-      expand("{out}/k{k}_n_{outfiles}.puffer_sparse_idx", out=output_path, outfiles=datasets, k=ksize),
+      expand("{out}/k{k}_n_{outfiles}.puffer_idx/seq.bin", out=output_path, outfiles=datasets, k=ksize),
+      expand("{out}/k{k}_n_{outfiles}.puffer_sparse_idx/seq.bin", out=output_path, outfiles=datasets, k=ksize),
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.bwa.lookup.benchmark.txt", out=output_path, ref=human_txome_ref, read=human_txome_read, k=ksize),
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.bwa.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize),
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.kallisto.lookup.benchmark.txt", out=output_path, ref=human_txome_ref, read=human_txome_read, k=ksize),
@@ -69,7 +71,7 @@ rule kallisto_lookup:
 
 rule puffer_lookup:
      input :
-           index = os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_idx"]),
+           index = os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_idx/seq.bin"]),
            reads = os.path.sep.join([data_path, "{reads}.fa"])
      output:
           os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}_vs_{reads}.puffer.lookup.benchmark.txt"])
@@ -79,12 +81,13 @@ rule puffer_lookup:
           puffer + " lookup -i {input.index} -r {input.reads}"
      log:
           os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}_vs_{reads}.puffer.lookup.log"])
-     shell :
-          puffer + " lookup -i {input.index} -r {input.reads} > {log} 2>&1"
+     run :
+          index_dir = str(input.index).rsplit("/",1)[0]
+          shell("{puffer} lookup -i {index_dir} -r {input.reads} > {log} 2>&1")
 
 rule puffer_sparse_lookup:
      input :
-           index = os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_sparse_idx"]),
+           index = os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_sparse_idx/seq.bin"]),
            reads = os.path.sep.join([data_path, "{reads}.fa"])
      output:
           os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}_vs_{reads}.puffer.sparse.lookup.benchmark.txt"])
@@ -94,8 +97,9 @@ rule puffer_sparse_lookup:
           puffer + " lookup -i {input.index} -r {input.reads}"
      log:
           os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}_vs_{reads}.puffer.sparse.lookup.log"])
-     shell :
-          puffer + " lookup -i {input.index} -r {input.reads} > {log} 2>&1"
+     run :
+          index_dir = str(input.index).rsplit("/",1)[0]
+          shell("{puffer} lookup -i {index_dir} -r {input.reads} > {log} 2>&1")
 
 
 rule bwa_index:
@@ -136,9 +140,9 @@ rule puffer_twopaco:
      benchmark:
           os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.puffer.twopaco.benchmark.txt"])
      message:
-          "{twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input}\n{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {input.de_bruijn} > {output}"
+          "{twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input} --outfile {input.de_bruijn}\n{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {input.de_bruijn} > {output}"
      shell :
-          "{twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input.fastafile};"
+          "{twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input.fastafile} --outfile {input.de_bruijn} && "
           "{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {input.de_bruijn} > {output}"
 
 rule puffer_pufferize:
@@ -160,29 +164,31 @@ rule puffer_index:
      input :
            os.path.sep.join([data_path, "k{ksize}_n_{ref}.pufferized.gfa"])
      output :
-           os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_idx"])
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_idx","seq.bin"])
      benchmark:
           os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.puffer.index.benchmark.txt"])
      message:
           puffer + " index -k {ksize} -o {output} -g {input}"
      log:
           os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}.puffer.index.log"])
-     shell :
-          "rm -rf {output}; {puffer} index -k {ksize} -o {output} -g {input} > {log} 2>&1"
+     run :
+          output_dir= str(output).rsplit("/",1)[0]
+          shell("rm -rf {output}; {puffer} index -k {ksize} -o {output_dir} -g {input} > {log} 2>&1")
 
 rule puffer_index_sparse:
      input :
            os.path.sep.join([data_path, "k{ksize}_n_{ref}.pufferized.gfa"])
      output :
-           os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_sparse_idx"])
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_sparse_idx","seq.bin"])
      benchmark:
           os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.puffer.index.sparse.benchmark.txt"])
      message:
           puffer + " index -k {ksize} -o {output} -g {input}"
      log:
           os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}.puffer.index.sparse.log"])
-     shell :
-          "rm -rf {output}; {puffer} index -s -k {ksize} -o {output} -g {input} > {log} 2>&1"
+     run :
+          output_dir= str(output).rsplit("/",1)[0]
+          shell("rm -rf {output}; {puffer} index -k {ksize} -o {output_dir} -g {input} > {log} 2>&1")
 
 rule debga_index:
      input :
@@ -195,6 +201,5 @@ rule debga_index:
           debga + " index -k {ksize} {input} {output}"
      shell :
            debga + " index -k {ksize} {input} {output}"
-
 
 
