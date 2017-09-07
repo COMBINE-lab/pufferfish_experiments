@@ -1,0 +1,127 @@
+import os
+
+ksize = config["ksize"]
+twopaco = config["twopaco"]
+pufferize = config["pufferize"]
+puffer = config["pufferfish"]
+data_path  = config["data_path"]
+output_path  = config["output_path"]
+
+human_txome_ref = config["human_txome_ref"]
+human_genome_ref = config["human_genome_ref"]
+#bacterial_genome_ref = config["bacterial_genome_ref"]
+#datasets = [human_txome_ref, human_genome_ref]
+datasets = [human_genome_ref]
+
+#human_txome_read = config["human_txome_read"]
+human_genome_read = config["human_genome_read"]
+#bacterial_genome_read = config["bacterial_genome_read"]
+
+
+
+rule all:
+     input:
+      expand("{out}/k{k}_n_{outfiles}.puffer_idx", out=output_path, outfiles=datasets, k=ksize),
+      expand("{out}/k{k}_n_{outfiles}.puffer_sparse_idx", out=output_path, outfiles=datasets, k=ksize),
+      #expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.lookup.benchmark.txt", out=output_path, ref=human_txome_ref, read=human_txome_read, k=ksize),
+      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize),
+      #expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.sparse.lookup.benchmark.txt", out=output_path, ref=human_txome_ref, read=human_txome_read, k=ksize),
+      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.sparse.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize)
+
+
+
+
+
+
+rule puffer_lookup:
+     input :
+           index = os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_idx"]),
+           reads = os.path.sep.join([data_path, "{reads}.fa"])
+     output:
+          os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}_vs_{reads}.puffer.lookup.benchmark.txt"])
+     benchmark:
+          os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}_vs_{reads}.puffer.lookup.benchmark.txt"])
+     message:
+          puffer + " lookup -i {input.index} -r {input.reads}"
+     log:
+          os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}_vs_{reads}.puffer.lookup.log"])
+     shell :
+          puffer + " lookup -i {input.index} -r {input.reads} > {log} 2>&1"
+
+rule puffer_sparse_lookup:
+     input :
+           index = os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_sparse_idx"]),
+           reads = os.path.sep.join([data_path, "{reads}.fa"])
+     output:
+          os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}_vs_{reads}.puffer.sparse.lookup.benchmark.txt"])
+     benchmark:
+          os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}_vs_{reads}.puffer.sparse.lookup.benchmark.txt"])
+     message:
+          puffer + " lookup -i {input.index} -r {input.reads}"
+     log:
+          os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}_vs_{reads}.puffer.sparse.lookup.log"])
+     shell :
+          puffer + " lookup -i {input.index} -r {input.reads} > {log} 2>&1"
+
+
+
+
+
+rule puffer_twopaco:
+     input :
+           fastafile = os.path.sep.join([data_path, "{ref}.fa"]),
+           de_bruijn = "de_bruijn.bin"
+     output :
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.gfa"])
+     benchmark:
+          os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.puffer.twopaco.benchmark.txt"])
+     message:
+          "{twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input}\n{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {input.de_bruijn} > {output}"
+     shell :
+          "{twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input.fastafile};"
+          "{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {input.de_bruijn} > {output}"
+
+rule puffer_pufferize:
+     input :
+           gfafile = os.path.sep.join([output_path, "k{ksize}_n_{ref}.gfa"]),
+           fastafile = os.path.sep.join([data_path, "{ref}.fa"])
+     output :
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.pufferized.gfa"])
+     benchmark:
+          os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.puffer.pufferize.benchmark.txt"])
+     message:
+           "{pufferize} -k {ksize} -g {input.gfafile} -f {input.fastafile} -o {output} > {log} 2>&1"
+     log:
+          os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}.puffer.pufferize.log"])
+     shell :
+           "{pufferize} -k {ksize} -g {input.gfafile} -f {input.fastafile} -o {output} > {log} 2>&1"
+
+rule puffer_index:
+     input :
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.pufferized.gfa"])
+     output :
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_idx"])
+     benchmark:
+          os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.puffer.index.benchmark.txt"])
+     message:
+          puffer + " index -k {ksize} -o {output} -g {input}"
+     log:
+          os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}.puffer.index.log"])
+     shell :
+          "rm -rf {output}; {puffer} index -k {ksize} -o {output} -g {input} > {log} 2>&1"
+
+rule puffer_index_sparse:
+     input :
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.pufferized.gfa"])
+     output :
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_sparse_idx"])
+     benchmark:
+          os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.puffer.index.sparse.benchmark.txt"])
+     message:
+          puffer + " index -k {ksize} -o {output} -g {input}"
+     log:
+          os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}.puffer.index.sparse.log"])
+     shell :
+          "rm -rf {output}; {puffer} index -s -k {ksize} -o {output} -g {input} > {log} 2>&1"
+
+
