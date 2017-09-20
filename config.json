@@ -8,7 +8,7 @@
     "pufferize" : "/mnt/scratch7/pufferfish_progs/pufferfish/build/src/pufferize",
     "data_path" : "/mnt/scratch7/pufferfish_data",
     "output_path1" : "/mnt/scratch7/pufferfish_results",
-    "output_path" : "/mnt/scratch7/test",
+    "output_path" : "/mnt/scratch6/test",
     "human_txome_ref" : "gencode.v25.pc_transcripts_fixed",
 	"human_genome_ref" : "GRCh38.primary_assembly.genome.fixed",
 	"bacterial_genome_ref" : "bacterial.genome.fixed",

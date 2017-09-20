@@ -140,9 +140,9 @@ rule puffer_twopaco:
      benchmark:
           os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.puffer.twopaco.benchmark.txt"])
      message:
-          "{twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input} --outfile {input.de_bruijn}\n{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {input.de_bruijn} > {output}"
+          "{twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input} --outfile {input.de_bruijn} --tmpdir {output_path}/twopacoTmp\n{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {input.de_bruijn} > {output}"
      shell :
-          "{twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input.fastafile} --outfile {input.de_bruijn} && "
+          "mkdir -p {output_path}/twopacoTmp && {twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input.fastafile} --outfile {input.de_bruijn} --tmpdir {output_path}/twopacoTmp && "
           "{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {input.de_bruijn} > {output}"
 
 rule puffer_pufferize:
@@ -183,12 +183,12 @@ rule puffer_index_sparse:
      benchmark:
           os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.puffer.index.sparse.benchmark.txt"])
      message:
-          puffer + " index -k {ksize} -o {output} -g {input}"
+          puffer + " index -s -k {ksize} -o {output} -g {input}"
      log:
           os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}.puffer.index.sparse.log"])
      run :
           output_dir= str(output).rsplit("/",1)[0]
-          shell("rm -rf {output}; {puffer} index -k {ksize} -o {output_dir} -g {input} > {log} 2>&1")
+          shell("rm -rf {output}; {puffer} index -s -k {ksize} -o {output_dir} -g {input} > {log} 2>&1")
 
 rule debga_index:
      input :
