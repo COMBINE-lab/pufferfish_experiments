@@ -7,8 +7,6 @@ puffer = config["pufferfish"]
 data_path  = config["data_path"]
 output_path  = config["output_path"]
 
-de_bruijn = os.path.sep.join([data_path, "de_bruijn.bin"])
-
 human_txome_ref = config["human_txome_ref"]
 human_genome_ref = config["human_genome_ref"]
 bacterial_genome_ref = config["bacterial_genome_ref"]
@@ -141,16 +139,15 @@ rule kallisto_index:
 rule puffer_twopaco:
      input :
            fastafile = os.path.sep.join([data_path, "{ref}.fa"]),
-           de_bruijn = os.path.sep.join([data_path, "de_bruijn.bin"])
      output :
            os.path.sep.join([data_path, "k{ksize}_n_{ref}.gfa"])
      benchmark:
           os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.puffer.twopaco.benchmark.txt"])
      message:
-          "{twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input} --outfile {input.de_bruijn} --tmpdir {output_path}/twopacoTmp\n{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {input.de_bruijn} > {output}"
+          "{twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input} --outfile {output_path}/de_bruijn --tmpdir {output_path}/twopacoTmp\n{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {output_path}/de_bruijn > {output}"
      shell :
-          "mkdir -p {output_path}/twopacoTmp && {twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input.fastafile} --outfile {input.de_bruijn} --tmpdir {output_path}/twopacoTmp && "
-          "{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {input.de_bruijn} > {output}"
+          "mkdir -p {output_path}/twopacoTmp && {twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input.fastafile} --outfile {output_path}/de_bruijn --tmpdir {output_path}/twopacoTmp && "
+          "{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {output_path}/de_bruijn > {output}"
 
 rule puffer_pufferize:
      input :
