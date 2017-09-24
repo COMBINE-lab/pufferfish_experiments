@@ -4,10 +4,12 @@ This repository provides all the dataset and command information one needs to ru
 ## Workflow Setting
 We used [Snakemake](http://snakemake.readthedocs.io/en/stable/) to manage the workflow to run all the experiments. Therefore, you just need to setup the necessary configurations such as links to the input files and binaries of the tools and run snakemake on the snake file we provide here. The snake file **"Snakefile"** along with the config file **"config.json"** in this repository contain all the commands and information to run three pipelines of **BWA**, **Kallisto**, and **Pufferfish** on three datasets of **human transcriptome**, **human genome**, and **8k bacterial genomes**.
 
+As explained in the [pufferfish paper](https://www.biorxiv.org/content/early/2017/09/21/191874), due to some technical issues and to unify all the pipelines of different tools, we needed to apply minor changes to the lookup methods for "BWA" and "Kallisto". We've pushed the updated source codes into this repository under the subdirectory "third_party". all the related experiments for BWA and Kallisto have been run using the binaries constructed from the updated source codes. So, user needs to make the binaries for BWA and Kallisto in the third_party and later set the required address in the config file to link to them.
+
 ## Config file
 Config file contains the addresses to the following information:
 1. value of k for k-mer based indexing tools (Kallisto and Pufferfish), default is **31**.
-2. All the binary files for "BWA", "Kallisto", "TwoPaCo", and "Pufferfish".
+2. Address to all the binary files for "BWA", "Kallisto", "TwoPaCo", and "Pufferfish". For kallisto and BWA, it is already set to the adopted versions in "third_party/bwa/bwa" and "third_party/kallisto_kmer_lookup/build/src/kallisto".
 3. Directory where all the input Datasets are stored.
 4. Directory of the output results (e.g. the indices and some intermediate files that will be removed at the end of the process.)
 5. Name of the reference and read files.
