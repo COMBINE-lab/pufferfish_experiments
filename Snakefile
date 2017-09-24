@@ -1,6 +1,5 @@
 ksize = config["ksize"]
 bwa = config["bwa"]
-debga = config["debga"]
 kallisto = config["kallisto"]
 twopaco = config["twopaco"]
 pufferize = config["pufferize"]
@@ -198,16 +197,5 @@ rule puffer_index_sparse:
           output_dir= str(output).rsplit("/",1)[0]
           shell("rm -rf {output}; {puffer} index -s -k {ksize} -o {output_dir} -g {input} > {log} 2>&1")
 
-rule debga_index:
-     input :
-           os.path.sep.join([data_path, "{ref}.fa"])
-     output :
-           os.path.sep.join([output_path, "k{ksize}_{ref}.debga_idx"])
-     benchmark:
-          os.path.sep.join([output_path, "benchmarks/k{ksize}_{ref}.debga.index.benchmark.txt"])
-     message:
-          debga + " index -k {ksize} {input} {output}"
-     shell :
-           debga + " index -k {ksize} {input} {output}"
 
 
