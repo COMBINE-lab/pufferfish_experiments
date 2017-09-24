@@ -12,12 +12,12 @@ de_bruijn = os.path.sep.join([data_path, "de_bruijn.bin"])
 
 human_txome_ref = config["human_txome_ref"]
 human_genome_ref = config["human_genome_ref"]
-#bacterial_genome_ref = config["bacterial_genome_ref"]
-datasets = [human_txome_ref, human_genome_ref]
+bacterial_genome_ref = config["bacterial_genome_ref"]
+datasets = [human_txome_ref, human_genome_ref, bacterial_genome_ref]
 
 human_txome_read = config["human_txome_read"]
 human_genome_read = config["human_genome_read"]
-#bacterial_genome_read = config["bacterial_genome_read"]
+bacterial_genome_read = config["bacterial_genome_read"]
 
 
 
@@ -27,14 +27,22 @@ rule all:
       expand("{out}/k{k}_n_{outfiles}.kallisto_idx", out=output_path, k=ksize, outfiles=datasets),
       expand("{out}/k{k}_n_{outfiles}.puffer_idx/seq.bin", out=output_path, outfiles=datasets, k=ksize),
       expand("{out}/k{k}_n_{outfiles}.puffer_sparse_idx/seq.bin", out=output_path, outfiles=datasets, k=ksize),
+
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.bwa.lookup.benchmark.txt", out=output_path, ref=human_txome_ref, read=human_txome_read, k=ksize),
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.bwa.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize),
+      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.bwa.lookup.benchmark.txt", out=output_path, ref=bacterial_genome_ref, read=bacterial_genome_read, k=ksize),
+
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.kallisto.lookup.benchmark.txt", out=output_path, ref=human_txome_ref, read=human_txome_read, k=ksize),
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.kallisto.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize),
+      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.kallisto.lookup.benchmark.txt", out=output_path, ref=bacterial_genome_ref, read=bacterial_genome_read, k=ksize),
+
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.lookup.benchmark.txt", out=output_path, ref=human_txome_ref, read=human_txome_read, k=ksize),
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize),
+      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.lookup.benchmark.txt", out=output_path, ref=bacterial_genome_ref, read=bacterial_genome_read, k=ksize),
+
       expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.sparse.lookup.benchmark.txt", out=output_path, ref=human_txome_ref, read=human_txome_read, k=ksize),
-      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.sparse.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize)
+      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.sparse.lookup.benchmark.txt", out=output_path, ref=human_genome_ref, read=human_genome_read, k=ksize),
+      expand("{out}/benchmarks/k{k}_n_{ref}_vs_{read}.puffer.sparse.lookup.benchmark.txt", out=output_path, ref=bacterial_genome_ref, read=bacterial_genome_read, k=ksize)
 
 
 rule bwa_lookup:
