@@ -1,10 +1,35 @@
 # Experiments for the pufferfish paper
-This repository provides all the dataset and command information one needs to run the experiments explained in the [pre-print for pufferfish](https://www.biorxiv.org/content/early/2017/09/21/191874).
+This repository provides access to all the datasets and commands needed to run the experiments explained in the [pre-print for pufferfish](https://www.biorxiv.org/content/early/2017/09/21/191874).
 
 ## Workflow Setting
-We used [Snakemake](http://snakemake.readthedocs.io/en/stable/) to manage the workflow to run all the experiments. Therefore, you just need to setup the necessary configurations such as links to the input files and binaries of the tools and run snakemake on the snake file we provide here. The snake file **"Snakefile"** along with the config file **"config.json"** in this repository contain all the commands and information to run three pipelines of **BWA**, **Kallisto**, and **Pufferfish** on three datasets of **human transcriptome**, **human genome**, and **8k bacterial genomes**.
+We used [Snakemake](http://snakemake.readthedocs.io/en/stable/) to manage the workflow used to run all experiments. Therefore, you just need to obtain the necesary pre-requisite files (as described below) and setup the necessary configurations (such as links to the input files and binaries of the required tools) and run snakemake on the snakefile provided here. The Snakefile (**"Snakefile"**) along with the config file (**"config.json"**) in this repository contain all the commands and information to run three pipelines of **BWA**, **Kallisto**, and **Pufferfish** on three datasets of **human transcriptome**, **human genome**, and **bacterial genomes**.
 
-As explained in the [pufferfish paper](https://www.biorxiv.org/content/early/2017/09/21/191874), due to some technical issues and to unify all the pipelines of different tools, we needed to apply minor changes to the lookup methods for "BWA" and "Kallisto". We've pushed the updated source codes into this repository under the subdirectory "third_party". all the related experiments for BWA and Kallisto have been run using the binaries constructed from the updated source codes. So, user needs to make the binaries for BWA and Kallisto in the third_party and later set the required address in the config file to link to them.
+As explained in the [pufferfish pre-print](https://www.biorxiv.org/content/early/2017/09/21/191874), to unify all the pipelines of different tools, we needed provide simple "lookup" methods for "BWA" and "kallisto". The relevant source code that provides this functionality has been committed to this repository under the subdirectory `third_party`. all the related experiments for BWA and kallisto have been run using the binaries constructed from the updated source codes. So, user needs to make the binaries for BWA and Kallisto in the third_party and later set the required address in the config file to link to them.
+
+### Making dependent binaries
+
+To make the relevant version of BWA, execute the following commands from the top level of this repository:
+
+```
+$ cd third_party/bwa
+$ make
+$ cd ../..
+```
+
+If there were no problems running `make`, you should have an executable named `bwa` in `third_party/bwa`.  Now, we need to build `kallisto`; this can be done with the following commands:
+
+```
+$ cd third_party/kallisto_kmer_lookup
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+$ cd ../../..
+```
+
+That is, we descend into the directory for kallisto, make a directory called `build`, move into that directory and configure the build with the command `cmake ..`, and then build the actual executable with the command `make`.  If these steps were succesful, then you should have an executable named `kallisto` in the directory `third_party/kallisto_kmer_lookup/build/src`.
+
+We also require two other tools to run our pipeline; [TwoPaCo](https://github.com/medvedevgroup/TwoPaCo) for building the compacted de Bruijn graph on input reference genomes and [pufferfish](https://github.com/COMBINE-lab/pufferfish) (our tool for compacted colored de Bruijn graph indexing and query).  We use the standard versions of both of these tools, and instructions for building these tools can be found on the respective GitHub pages.
 
 ## Config file
 Config file contains the addresses to the following information:
