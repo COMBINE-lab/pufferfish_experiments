@@ -1,0 +1,16 @@
+{
+	"ksize" : "31",
+	"bwa" : "third_party/bwa/bwa",
+  "pufferfish" : "PATH_TO_PUFFERFISH/build/src/pufferfish",
+  "kallisto" : "third_party/kallisto_kmer_lookup/build/src/kallisto",
+  "twopaco" : "PATH_TO_TWOPACO/build",
+  "pufferize" : "PATH_TO_PUFFERFISH/build/src/pufferize",
+  "data_path" : "DATA_PATH/pufferfish_data",
+  "output_path" : "OUTPUT_PATH/pufferfish_results",
+    "human_txome_ref" : "gencode.v25.pc_transcripts_fixed",
+	 "human_genome_ref" : "GRCh38.primary_assembly.genome.fixed",
+	"bacterial_genome_ref" : "bacterial.genome.fixed",
+    "human_txome_read" : "human_txome_reads",
+	"human_genome_read" : "human_genome_reads",
+	"bacterial_genome_read" : "bacterial_genome_reads"
+}
