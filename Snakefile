@@ -20,7 +20,7 @@ bacterial_genome_read = config["bacterial_genome_read"]
 
 rule all:
      input:
-      expand("{out}/k{k}_n_{outfiles}.bwa_idx", out=output_path, k=ksize, outfiles=datasets),
+      expand("{out}/k{k}_n_{outfiles}.bwa_idx/bwa", out=output_path, k=ksize, outfiles=datasets),
       expand("{out}/k{k}_n_{outfiles}.kallisto_idx", out=output_path, k=ksize, outfiles=datasets),
       expand("{out}/k{k}_n_{outfiles}.puffer_idx/seq.bin", out=output_path, outfiles=datasets, k=ksize),
       expand("{out}/k{k}_n_{outfiles}.puffer_sparse_idx/seq.bin", out=output_path, outfiles=datasets, k=ksize),
@@ -44,7 +44,7 @@ rule all:
 
 rule bwa_lookup:
      input :
-           index = os.path.sep.join([output_path, "k{ksize}_n_{ref}.bwa_idx"]),
+           index = os.path.sep.join([output_path, "k{ksize}_n_{ref}.bwa_idx/bwa"]),
            reads = os.path.sep.join([data_path, "{reads}.fa"])
      output :
            os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}_vs_{reads}.bwa.lookup.benchmark.txt"])
@@ -111,15 +111,16 @@ rule bwa_index:
      input :
            os.path.sep.join([data_path, "{ref}.fa"])
      output :
-           os.path.sep.join([output_path, "k{ksize}_n_{ref}.bwa_idx"])
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.bwa_idx/bwa"])
      benchmark:
           os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.bwa.index.benchmark.txt"])
      message:
           bwa + " index  -p {output} {input}"
      log:
           os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}.bwa.index.log"])
-     shell :
-           "touch {output}; {bwa} index  -p {output} {input} > {log} 2>&1"
+     run :
+          output_dir= str(output).rsplit("/",1)[0]
+          shell("mkdir -P {output_dir}; touch {output}; {bwa} index  -p {output} {input} > {log} 2>&1")
 
 
 rule kallisto_index:
