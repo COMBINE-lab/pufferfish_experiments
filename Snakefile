@@ -140,21 +140,21 @@ rule puffer_twopaco:
      input :
            fastafile = os.path.sep.join([data_path, "{ref}.fa"]),
      output :
-           os.path.sep.join([data_path, "k{ksize}_n_{ref}.gfa"])
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.gfa"])
      benchmark:
           os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.puffer.twopaco.benchmark.txt"])
      message:
-          "{twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input} --outfile {output_path}/de_bruijn --tmpdir {output_path}/twopacoTmp\n{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {output_path}/de_bruijn > {output}"
+          "{twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input} --outfile {output_path}/de_bruijn.bin --tmpdir {output_path}/twopacoTmp\n{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {output_path}/de_bruijn.bin > {output}"
      shell :
           "mkdir -p {output_path}/twopacoTmp && {twopaco}/graphconstructor/twopaco -k {ksize} -t 10 -f 32 {input.fastafile} --outfile {output_path}/de_bruijn --tmpdir {output_path}/twopacoTmp && "
           "{twopaco}/graphdump/graphdump -k {ksize} -s {input.fastafile} -f gfa1 {output_path}/de_bruijn > {output}"
 
 rule puffer_pufferize:
      input :
-           gfafile = os.path.sep.join([data_path, "k{ksize}_n_{ref}.gfa"]),
+           gfafile = os.path.sep.join([output_path, "k{ksize}_n_{ref}.gfa"]),
            fastafile = os.path.sep.join([data_path, "{ref}.fa"])
      output :
-           os.path.sep.join([data_path, "k{ksize}_n_{ref}.pufferized.gfa"])
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.pufferized.gfa"])
      benchmark:
           os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.puffer.pufferize.benchmark.txt"])
      message:
@@ -166,7 +166,7 @@ rule puffer_pufferize:
 
 rule puffer_index:
      input :
-           os.path.sep.join([data_path, "k{ksize}_n_{ref}.pufferized.gfa"])
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.pufferized.gfa"])
      output :
            os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_idx","seq.bin"])
      benchmark:
@@ -181,7 +181,7 @@ rule puffer_index:
 
 rule puffer_index_sparse:
      input :
-           os.path.sep.join([data_path, "k{ksize}_n_{ref}.pufferized.gfa"])
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.pufferized.gfa"])
      output :
            os.path.sep.join([output_path, "k{ksize}_n_{ref}.puffer_sparse_idx","seq.bin"])
      benchmark:
