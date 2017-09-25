@@ -39,7 +39,7 @@ The config file contains the addresses to the following information, which is us
 4. The directory where output results should be written (e.g. the indices and some intermediate files that will be removed at the end of the process.).  This directory should have at least `650`G of free space.
 5. The names of the references to index and the read files from which to query k-mers.
 
-Therefore before running the `snakemak`e command, the user should first set all these information in the config file.
+Therefore before running the `snakemake` command, the user should first set all these information in the config file.
 
 ## Datasets
 
