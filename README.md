@@ -72,4 +72,4 @@ After setting all the configs and downloading the datasets, you can run the expe
 $ snakemake --configfile config.json 
 ```
 
-The version of snakemake we ran all the experiments with is **3.13.3**.  However, you will need a snakemake version of at least ***3.11.0***, since earlier versions do not track detailed memory usage using the built-in benchmarking rules.
+The version of snakemake we ran all the experiments with is **3.13.3**.  However, you will need a snakemake version of at least ***3.12.0*** according to this [change log](http://snakemake.readthedocs.io/en/stable/project_info/history.html), since earlier versions do not track detailed memory usage using the built-in benchmarking rules.
