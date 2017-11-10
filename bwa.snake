@@ -1,0 +1,98 @@
+import os
+
+threads = config["threads"]
+ksize = config["ksize"]
+bwa = config["bwa"]
+hisat2 = config["hisat2"]
+hisat2build = config["hisat2index"]
+
+data_path  = config["data_path"]
+output_path  = config["output_path"]
+read_path  = config["read_path"]
+
+human_txome_ref = config["human_txome_ref"]
+human_genome_ref = config["human_genome_ref"]
+
+datasets = [human_txome_ref, human_genome_ref]
+
+human_txome_read = config["human_txome_read"]
+human_genome_read = config["human_genome_read"]
+
+rule all:
+     input:
+      expand("{out}/k{k}_n_{outfiles}.bwa_idx", out=output_path, k=ksize, outfiles=datasets),
+      expand("{out}/{outfiles}.hisat_idx", out=output_path, outfiles=datasets),
+
+      expand("{out}/{read}_bwa_{k}_{ref}.bam", out=output_path, read=human_txome_read, k=ksize, ref=human_txome_ref),
+      expand("{out}/{read}_bwa_{k}_{ref}.bam", out=output_path, read=human_genome_read, k=ksize, ref=human_genome_ref),
+
+      expand("{out}/{read}_hisat_{ref}.bam", out=output_path, read=human_txome_read, ref=human_txome_ref),
+      expand("{out}/{read}_hisat_{ref}.bam", out=output_path, read=human_genome_read, ref=human_genome_ref)
+
+
+
+rule bwa_align:
+     input :
+           index = os.path.sep.join([output_path, "k{ksize}_n_{ref}.bwa_idx"]),
+           read1 = os.path.sep.join([read_path, "{read}_1.fa.gz"]),
+           read2 = os.path.sep.join([read_path, "{read}_2.fa.gz"])
+     output:
+           os.path.sep.join([output_path, "{read}_bwa_{ksize}_{ref}.bam"])
+     threads:
+           threads
+     benchmark:
+           os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.bwa.align.benchmark.txt"])
+     message:
+           bwa + " mem -t {threads} -k {ksize} {input.index} {input.read1} {input.read2} | samtools view -bS - > {output}"
+     log:
+           os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}.bwa.index.log"])
+     shell:
+           "{bwa} mem -t {threads} -k {ksize} {input.index} {input.read1} {input.read2} | samtools view -bS - > {output}"
+
+
+rule hisat_align:
+     input :
+           index = os.path.sep.join([output_path, "{ref}.hisat_idx"]),
+           read1 = os.path.sep.join([read_path, "{read}_1.fa.gz"]),
+           read2 = os.path.sep.join([read_path, "{read}_2.fa.gz"])
+     output:
+           bamfile = os.path.sep.join([output_path, "{read}_hisat_{ref}.bam"]),
+     threads:
+           threads
+     benchmark:
+           os.path.sep.join([output_path, "benchmarks/{read}_hisat_{ref}_align.benchmark.txt"])
+     message:
+           hisat2 + " -p {threads} -x {input.index} -1 {input.read1} -2 {input.read2} | samtools view -bS - > {output.bamfile}"
+     log:
+           os.path.sep.join([output_path, "logs/{read}_{ref}.hisat.index.log"])
+     shell:
+           "{hisat2} -f -p {threads} -x {input.index} -1 {input.read1} -2 {input.read2} | samtools view -bS - > {output.bamfile}"
+
+
+rule bwa_index:
+     input :
+           os.path.sep.join([data_path, "{ref}.fa"])
+     output: 
+           os.path.sep.join([output_path, "k{ksize}_n_{ref}.bwa_idx"])
+     benchmark:
+           os.path.sep.join([output_path, "benchmarks/k{ksize}_n_{ref}.bwa.index.benchmark.txt"])
+     message:
+          bwa + " index  -p {output} {input}"
+     log:
+          os.path.sep.join([output_path, "logs/k{ksize}_n_{ref}.bwa.index.log"])
+     shell:
+          "touch {output}; {bwa} index  -p {output} {input} > {log} 2>&1"
+
+rule hisat_index:
+     input :
+           os.path.sep.join([data_path, "{ref}.fa"])
+     output: 
+           os.path.sep.join([output_path, "{ref}.hisat_idx"])
+     benchmark:
+           os.path.sep.join([output_path, "benchmarks/{ref}.hisat.index.benchmark.txt"])
+     message:
+          hisat2build + " -f {input} {output}"
+     log:
+          os.path.sep.join([output_path, "logs/{ref}.hisat.index.log"])
+     shell:
+          "touch {output}; {hisat2build} -q -f {input} {output}"
