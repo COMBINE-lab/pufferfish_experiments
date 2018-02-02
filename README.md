@@ -36,10 +36,10 @@ The config file contains the addresses to the following information, which is us
 1. A value of _k_ for k-mer based indexing tools (kallisto and pufferfish); the default is **31**.
 2. The address to all binary files for `bwa`, `kallisto`, `twopaco`, and `pufferfish`. For kallisto and BWA, it is already set to the adopted versions in `third_party/bwa/bwa` and `third_party/kallisto_kmer_lookup/build/src/kallisto`, that will result if you build these as described above.  For TwoPaCo and pufferfish, set these according to where you have compiled these tools.
 3. The directory where all the input datasets are stored.
-4. The directory where output results should be written (e.g. the indices and some intermediate files that will be removed at the end of the process.).  This directory should have at least `XXX`G of free space.
+4. The directory where output results should be written (e.g. the indices and some intermediate files that will be removed at the end of the process.).  This directory should have at least `650`G of free space.
 5. The names of the references to index and the read files from which to query k-mers.
 
-Therefore before running the `snakemak`e command, the user should first set all these information in the config file.
+Therefore before running the `snakemake` command, the user should first set all these information in the config file.
 
 ## Datasets
 
@@ -72,4 +72,4 @@ After setting all the configs and downloading the datasets, you can run the expe
 $ snakemake --configfile config.json 
 ```
 
-The version of snakemake we ran all the experiments with is **3.13.3**.  However, you will need a snakemake version of at least ***X.XX.X***, since earlier versions do not track detailed memory usage using the built-in benchmarking rules.
+The version of snakemake we ran all the experiments with is **3.13.3**.  However, you will need a snakemake version of at least ***3.12.0*** according to this [change log](http://snakemake.readthedocs.io/en/stable/project_info/history.html), since earlier versions do not track detailed memory usage using the built-in benchmarking rules.

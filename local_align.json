@@ -1,0 +1,14 @@
+{
+	"ksize" : "31",
+  "threads" : 1,
+	"bwa" : "/mnt/scratch7/pufferfish_progs/bwa/bwa",
+	"hisat2" : "/mnt/scratch7/pufferfish_progs/hisat2/hisat2",
+	"hisat2index" : "/mnt/scratch7/pufferfish_progs/hisat2/hisat2-build",
+  "data_path" : "/mnt/scratch6/pufferfish_experiment_recomb/ref",
+  "read_path" : "/mnt/scratch6/pufferfish_experiment_recomb/sim_reads",
+  "output_path" : "/mnt/scratch6/pufferfish_experiment_recomb/test_1_thread",
+  "human_txome_ref" : "sim.txome",
+	"human_genome_ref" : "GRCh38.primary.assembly.genome.fixed",
+  "human_txome_read" : "sample_01_shuffled",
+    "human_genome_read" : "mason_sim_40M_100_genome"
+}
