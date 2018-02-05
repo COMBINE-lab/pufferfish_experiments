@@ -1,5 +1,7 @@
 {
 	"read_dir":"/mnt/scratch2/avi/meta-map/kraken/reads",
+	"datasets":["HC1", "HC2", "LC1","LC2","LC3","LC4", "LC5", "LC6", "LC7", "LC8", "P00497_Deep.100.Mreads"],
+	"ranks":["species","genus","family","order","class","phylum"],
 	
 	"pufferfish_dir":"/home/fatemeh/projects/pufferfish/build/src",
 	"pufferfish_index_dir":"/mnt/scratch2/avi/meta-map/kraken/puff/index",

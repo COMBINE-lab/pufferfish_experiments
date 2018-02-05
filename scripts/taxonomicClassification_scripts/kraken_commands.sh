@@ -2,8 +2,9 @@
 #!/usr/bin/env
 
 echo "Kraken Experiments"
-declare -a datasets=("LC4")
-declare -a ranks=("phylum")
+
+datasets=($(jq -r '.datasets[]' config.json))                                             
+ranks=($(jq -r '.ranks[]' config.json))                                                   
 
 kraken_read_dir=`jq -r '.read_dir' config.json`
 echo "read_dir: $kraken_read_dir"

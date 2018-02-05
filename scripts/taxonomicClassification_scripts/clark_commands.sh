@@ -2,9 +2,9 @@
 #!/usr/bin/env
 
 echo "Clark Experiments"
-declare -a datasets=("LC4")
 
-declare -a arrayRank=("phylum")
+datasets=($(jq -r '.datasets[]' config.json))                                             
+arrayRank=($(jq -r '.ranks[]' config.json))                                                   
 
 clark_read_dir=`jq -r '.read_dir' config.json`
 echo "read_dir: $clark_read_dir"
