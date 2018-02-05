@@ -1,14 +1,25 @@
-pufferfish_dir="/home/fatemeh/projects/pufferfish/build/src"
-pufferfish_index_dir="/mnt/scratch2/avi/meta-map/kraken/puff/index"
-read_dir="/mnt/scratch2/avi/meta-map/kraken/reads"
-pufferfish_input_dir="."
-pufferfish_output_dir="/mnt/scratch2/fatemeh/krakpuff"
+#!/bin/bash
+#!/usr/bin/env
 
-declare -a datasets="(LC4)"
+echo "Pufferfish Experiments"
+
+pufferfish_dir=$(jq -r '.pufferfish_dir' config.json)
+echo "pufferfish_dir: $pufferfish_dir"
+pufferfish_index_dir=`jq -r '.pufferfish_index_dir' config.json`
+echo "pufferfish_index_dir: $pufferfish_index_dir"
+read_dir=`jq -r '.read_dir' config.json`
+echo "read_dir: $read_dir"
+pufferfish_input_dir="."
+pufferfish_output_dir=`jq -r '.pufferfish_output_dir' config.json`
+echo "pufferfish_output_dir: $pufferfish_output_dir"
+
+declare -a datasets=("LC4")
 declare -a ranks=("phylum")
 
-mapping_output_dir=${pufferfish_output_dir}"/mapping_output"
-krakpuff_output_dir=${pufferfish_output_dir}"/krakpuff_output"
+mkdir -p ${pufferfish_output_dir}
+
+mapping_output_dir="${pufferfish_output_dir}/mapping_output"
+krakpuff_output_dir="${pufferfish_output_dir}/krakpuff_output"
 
 mkdir -p ${mapping_output_dir}
 mkdir -p ${krakpuff_output_dir}

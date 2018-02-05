@@ -1,0 +1,15 @@
+{
+	"read_dir":"/mnt/scratch2/avi/meta-map/kraken/reads",
+	
+	"pufferfish_dir":"/home/fatemeh/projects/pufferfish/build/src",
+	"pufferfish_index_dir":"/mnt/scratch2/avi/meta-map/kraken/puff/index",
+	"pufferfish_output_dir":"/mnt/scratch2/fatemeh/krakpuff",
+	
+	"clark_dir":"/home/fatemeh/others_projects/CLARKSCV1.2.4",
+	"clark_db":"/mnt/scratch2/avi/meta-map/bin/CLARKSCV1.2.4/db",
+	"clark_output_dir":"/mnt/scratch2/fatemeh/krakpuff/clark_reports/tst",
+
+	"kraken_dir":"/home/fatemeh/others_projects/kraken_installed",
+	"kraken_db":"/mnt/scratch2/avi/meta-map/kraken/KrakenDB",                        
+	"kraken_output_dir":"/mnt/scratch2/fatemeh/krakpuff/kraken/tst"
+}

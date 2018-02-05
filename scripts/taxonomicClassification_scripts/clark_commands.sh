@@ -6,12 +6,16 @@ declare -a datasets=("LC4")
 
 declare -a arrayRank=("phylum")
 
-clark_dir="/home/fatemeh/others_projects/CLARKSCV1.2.4"
-clark_db="/mnt/scratch2/avi/meta-map/bin/CLARKSCV1.2.4/db"
-clark_read_dir="/mnt/scratch2/avi/meta-map/kraken/reads"
-clark_output_dir="/mnt/scratch2/fatemeh/krakpuff/clark_reports/tst"
+clark_read_dir=`jq -r '.read_dir' config.json`
+echo "read_dir: $clark_read_dir"
+clark_dir=`jq -r '.clark_dir' config.json`
+echo "clark_dir: $clark_dir"
+clark_db=`jq -r '.clark_db' config.json`
+echo "clark_db: $clark_db"
+clark_output_dir=`jq -r '.clark_output_dir' config.json`
+echo "clark_output_dir: $clark_output_dir"
 
-
+mkdir -p ${clark_output_dir}}
 rm -rf ${clark_output_dir}/input_files
 mkdir ${clark_output_dir}/input_files
 clark_input_dir=${clark_output_dir}/input_files
